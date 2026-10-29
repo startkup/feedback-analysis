@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淡江新創社 - 活動回饋分析與陳報 PDF 生成器</title>
+    <!-- 引入外部樣式表 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 上方控制面板（列印時會自動被 CSS 隱藏） -->
+        <div class="card no-print">
+            <h2 class="dashboard-title">🚀 淡江新創社 活動回饋分析與 PDF 報告生成器</h2>
+            <p>請上傳表單匯出的 CSV 或 Excel (.xlsx) 檔，系統將自動解構數據並生成符合課外組規範的陳報文件。</p>
+            
+            <div class="upload-area" id="dropZone">
+                <p>📄 點擊上傳或拖曳 Google 表單 CSV 或 Excel (.xlsx) 檔案至此</p>
+                <input type="file" id="csvFile" accept=".csv, .xlsx" class="hidden">
+            </div>
+            
+            <!-- 上傳狀態提示區 -->
+            <div id="status" class="status-msg"></div>
+            
+            <!-- 報表控制按鈕區 -->
+            <div id="controls" class="hidden control-buttons">
+                <button class="btn" id="generatePromptBtn">複製 AI 完全解構 Prompt</button>
+                <button class="btn btn-success" id="printReportBtn">🖨️ 列印/匯出為正式 PDF 報告</button>
+                <button class="btn btn-download" id="downloadPdfBtn">📥 直接下載為 PDF 檔案</button>
+            </div>
+        </div>
+
+        <!-- PDF 正式報告預覽區 -->
+        <div id="pdfReport" class="pdf-page hidden">
+            <!-- 報告標頭 -->
+            <div class="pdf-header">
+                <p class="pdf-org-info">淡江大學淡水校園 - 新創社 (社團編號: 1083)</p>
+                <h1 class="pdf-title" id="reportTitle">【專案管理工作坊(上)】活動回饋與成果分析報告</h1>
+                <div class="pdf-subtitle">活動公文編號：<span id="docNo">1142-1083-00004</span> | 編製日期：2026年04月10日</div>
+            </div>
+
+            <!-- 活動基本資訊 -->
+            <div class="pdf-meta">
+                <div><b>活動名稱：</b><span id="actName">專案管理工作坊(上)</span></div>
+                <div><b>活動負責人：</b>陳仲崴 (社長)</div>
+                <div><b>有效問卷數：</b><span id="surveyCount">0</span> 份</div>
+                <div><b>問卷回收率：</b>100%</div>
+            </div>
+
+            <!-- 壹、背景資料 -->
+            <div class="pdf-section-title">壹、基本資料與學員背景分析</div>
+            <p class="pdf-description">本活動旨在培養跨域專案管理實務能力，以下為參與者背景數據統計：</p>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th>學院/背景維度</th>
+                        <th>統計人數</th>
+                        <th>占比 (%)</th>
+                        <th>背景分析與洞察 (Insight)</th>
+                    </tr>
+                </thead>
+                <tbody id="bgTable">
+                    <!-- JavaScript 動態填入 -->
+                </tbody>
+            </table>
+
+            <!-- 貳、定量數據 -->
+            <div class="pdf-section-title">貳、問卷分析結果</div>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th>指標項目 (1-6分制)</th>
+                        <th>平均分數</th>
+                        <th>高分滿意度 (%)</th>
+                        <th>成效評估與改善方向</th>
+                    </tr>
+                </thead>
+                <tbody id="metricsTable">
+                    <!-- JavaScript 動態填入 -->
+                </tbody>
+            </table>
+
+            <!-- 參、定性回饋 -->
+            <div class="pdf-section-title">參、其他量化結果描述</div>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th class="feedback-col-width">原始學員反饋意見 (代表性留言)</th>
+                        <th class="feedback-col-width">質化分析與歸納建議</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTable">
+                    <!-- JavaScript 動態填入 -->
+                </tbody>
+            </table>
+
+            <!-- 肆、行動計畫 -->
+            <div class="pdf-section-title">肆、檢討與建議</div>
+            <div class="pdf-pdca-box">
+                <ol>
+                    <li><b>互動與遊戲化優化：</b> 針對部分學員反映遊戲連線不同步問題，未來將流程調整為分組實體機制，避開單向網路操作風險。</li>
+                    <li><b>時間與流程精準掌控：</b> 將於活動開始前 30 分鐘完成硬體與簡報設備最終 Check-list 檢測，確保時程不延誤。</li>
+                    <li><b>跨領域課程延伸：</b> 針對高分滿意度之學員需求，下學期將結合 U-start 實戰專案，提供進階商模與 AI 應用落地教學。</li>
+                </ol>
+            </div>
+            
+            <!-- 報告頁尾 -->
+            <div class="pdf-footer-author">
+                淡江大學新創社 執行團隊 編製
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入 SheetJS 以支援直接讀取 Excel (.xlsx) 功能 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- 引入 html2pdf.js 程式庫以支援直接下載 PDF 功能 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- 引入外部 JavaScript 邏輯 -->
+    <script src="script.js"></script>
+</body>
+</html>
